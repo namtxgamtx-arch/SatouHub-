@@ -1,50 +1,62 @@
 -- โหลด Rayfield Library
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
--- สร้างหน้าต่างหลักค่าย Satou Hub (ธีมสีแดงตามโลโก้)
+-- สร้างหน้าต่างหลักค่าย Satou Hub
 local Window = Rayfield:CreateWindow({
    Name = "🔴 SATOU HUB | Steal an Egg",
    LoadingTitle = "SATOU HUB",
    LoadingSubtitle = "Created by Satou",
-   Theme = "DarkRed", -- ปรับโทนสีแดงให้เข้ากับโลโก้ตัว S
+   Theme = "DarkRed",
    ConfigurationSaving = {
       Enabled = true,
       FolderName = "SatouHubConfig",
       FileName = "Configuration"
    },
-   Discord = {
-      Enabled = false,
-      Invite = "discord.gg/satouhub",
-      RememberJoins = true
-   },
    KeySystem = false
 })
 
--- ป็อปอัปต้อนรับสไตล์ Satou Hub
-Rayfield:Notify({
-   Title = "WELCOME TO SATOU HUB!",
-   Content = "โหลดสคริปต์ค่าย Satou Hub เรียบร้อยแล้ว!",
-   Duration = 5,
-   Image = 4483345998,
-})
+---------------------------------------------------------
+-- 🔴 ระบบปุ่มเปิด/ปิด GUI ลอยหน้าจอ (แทนปุ่ม Show Rayfield เดิม)
+---------------------------------------------------------
+local ScreenGui = Instance.new("ScreenGui")
+local ToggleButton = Instance.new("TextButton")
+local UICorner = Instance.new("UICorner")
+local UIStroke = Instance.new("UIStroke")
+
+ScreenGui.Parent = game.CoreGui or game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.Name = "SatouHubToggleButton"
+
+ToggleButton.Parent = ScreenGui
+ToggleButton.BackgroundColor3 = Color3.fromRGB(150, 0, 0) -- สีแดงตามแบรนด์ Satou
+ToggleButton.Position = UDim2.new(0, 10, 0.4, 0) -- ตำแหน่งมุมซ้ายหน้าจอ
+ToggleButton.Size = UDim2.new(0, 60, 0, 60)     -- ขนาดปุ่มวงกลม
+ToggleButton.Font = Enum.Font.SourceSansBold
+ToggleButton.Text = "S"                          -- โลโก้ตัว S สีแดง
+ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleButton.TextSize = 35.000
+ToggleButton.Active = true
+ToggleButton.Draggable = true                    -- สามารถกดค้างแล้วลากปุ่มไปมาได้ทั่วหน้าจอ
+
+UICorner.CornerRadius = UDim.new(1, 0)            -- ทำเป็นวงกลม
+UICorner.Parent = ToggleButton
+
+UIStroke.Parent = ToggleButton
+UIStroke.Color = Color3.fromRGB(255, 50, 50)
+UIStroke.Thickness = 2
+
+-- สั่งเปิด/ปิด เมนูหลักเมื่อกดปุ่มตัว S
+ToggleButton.MouseButton1Click:Connect(function()
+    Rayfield:Toggle()
+end)
 
 ---------------------------------------------------------
--- TAB 1: หน้าหลัก / ประกาศข่าวสาร (Home)
+-- TAB 1: หน้าหลัก (Home)
 ---------------------------------------------------------
 local HomeTab = Window:CreateTab("🏠 หน้าหลัก", 4483345998)
 
 HomeTab:CreateSection("ยินดีต้อนรับสู่ Satou Hub")
 HomeTab:CreateLabel("สคริปต์อย่างเป็นทางการของค่าย Satou Hub")
-HomeTab:CreateLabel("เวอร์ชัน: v1.0.0 (รองรับ iOS / Android)")
-
-HomeTab:CreateSection("ชุมชน & การติดต่อ")
-HomeTab:CreateButton({
-   Name = "คัดลอกลิงก์ Discord ค่าย Satou Hub",
-   Callback = function()
-      setclipboard("https://discord.gg/satouhub")
-      Rayfield:Notify({Title = "Satou Hub System", Content = "คัดลอกลิงก์ Discord เรียบร้อย!", Duration = 3})
-   end,
-})
+HomeTab:CreateLabel("กดที่ปุ่มวงกลมตัว 'S' สีแดงบนหน้าจอเพื่อ ซ่อน/เปิด เมนูได้ตลอดเวลา")
 
 ---------------------------------------------------------
 -- TAB 2: ฟังก์ชันขโมยไข่ (Steal an Egg)
@@ -113,8 +125,6 @@ EggTab:CreateButton({
 ---------------------------------------------------------
 local MiscTab = Window:CreateTab("⚙️ ตั้งค่าตัวละคร", 4483345998)
 
-MiscTab:CreateSection("ปรับแต่งความเร็ว")
-
 MiscTab:CreateSlider({
    Name = "WalkSpeed (ความเร็วเดิน)",
    Range = {16, 200},
@@ -125,20 +135,6 @@ MiscTab:CreateSlider({
    Callback = function(Value)
       if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
          game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
-      end
-   end,
-})
-
-MiscTab:CreateSlider({
-   Name = "JumpPower (แรงกระโดด)",
-   Range = {50, 300},
-   Increment = 5,
-   Suffix = "Power",
-   CurrentValue = 50,
-   Flag = "JumpSlider",
-   Callback = function(Value)
-      if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
-         game.Players.LocalPlayer.Character.Humanoid.JumpPower = Value
       end
    end,
 })
