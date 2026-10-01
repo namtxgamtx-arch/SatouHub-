@@ -16,8 +16,9 @@ local Window = Rayfield:CreateWindow({
 })
 
 ---------------------------------------------------------
--- 🔴 ระบบปุ่มเปิด/ปิด GUI ลอยหน้าจอ (แทนปุ่ม Show Rayfield เดิม)
+-- 🔴 ระบบปุ่มลอย Satou Hub (แก้ไขระบบสั่งเปิด/ปิดให้ทำงานได้จริง)
 ---------------------------------------------------------
+local VirtualInputManager = game:GetService("VirtualInputManager")
 local ScreenGui = Instance.new("ScreenGui")
 local ToggleButton = Instance.new("TextButton")
 local UICorner = Instance.new("UICorner")
@@ -27,26 +28,28 @@ ScreenGui.Parent = game.CoreGui or game.Players.LocalPlayer:WaitForChild("Player
 ScreenGui.Name = "SatouHubToggleButton"
 
 ToggleButton.Parent = ScreenGui
-ToggleButton.BackgroundColor3 = Color3.fromRGB(150, 0, 0) -- สีแดงตามแบรนด์ Satou
-ToggleButton.Position = UDim2.new(0, 10, 0.4, 0) -- ตำแหน่งมุมซ้ายหน้าจอ
-ToggleButton.Size = UDim2.new(0, 60, 0, 60)     -- ขนาดปุ่มวงกลม
+ToggleButton.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
+ToggleButton.Position = UDim2.new(0, 10, 0.4, 0)
+ToggleButton.Size = UDim2.new(0, 55, 0, 55)
 ToggleButton.Font = Enum.Font.SourceSansBold
-ToggleButton.Text = "S"                          -- โลโก้ตัว S สีแดง
+ToggleButton.Text = "S"
 ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleButton.TextSize = 35.000
+ToggleButton.TextSize = 32.000
 ToggleButton.Active = true
-ToggleButton.Draggable = true                    -- สามารถกดค้างแล้วลากปุ่มไปมาได้ทั่วหน้าจอ
+ToggleButton.Draggable = true
 
-UICorner.CornerRadius = UDim.new(1, 0)            -- ทำเป็นวงกลม
+UICorner.CornerRadius = UDim.new(1, 0)
 UICorner.Parent = ToggleButton
 
 UIStroke.Parent = ToggleButton
 UIStroke.Color = Color3.fromRGB(255, 50, 50)
 UIStroke.Thickness = 2
 
--- สั่งเปิด/ปิด เมนูหลักเมื่อกดปุ่มตัว S
+-- แก้ไขจุดนี้: สั่งให้กดปุ่มจำลองเมื่อแตะปุ่ม S
 ToggleButton.MouseButton1Click:Connect(function()
-    Rayfield:Toggle()
+    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.K, false, game)
+    task.wait(0.05)
+    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.K, false, game)
 end)
 
 ---------------------------------------------------------
@@ -56,7 +59,7 @@ local HomeTab = Window:CreateTab("🏠 หน้าหลัก", 4483345998)
 
 HomeTab:CreateSection("ยินดีต้อนรับสู่ Satou Hub")
 HomeTab:CreateLabel("สคริปต์อย่างเป็นทางการของค่าย Satou Hub")
-HomeTab:CreateLabel("กดที่ปุ่มวงกลมตัว 'S' สีแดงบนหน้าจอเพื่อ ซ่อน/เปิด เมนูได้ตลอดเวลา")
+HomeTab:CreateLabel("กดที่ปุ่ม 'S' เพื่อ ซ่อน/เปิด เมนูได้เลย")
 
 ---------------------------------------------------------
 -- TAB 2: ฟังก์ชันขโมยไข่ (Steal an Egg)
