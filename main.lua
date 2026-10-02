@@ -1,151 +1,133 @@
--- โหลด Rayfield Library
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+-- โหลด Fluent UI Library
+local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
 
--- สร้างหน้าต่างหลักค่าย Satou Hub
-local Window = Rayfield:CreateWindow({
-   Name = "🔴 SATOU HUB | Steal an Egg",
-   LoadingTitle = "SATOU HUB",
-   LoadingSubtitle = "Created by Satou",
-   Theme = "DarkRed",
-   ConfigurationSaving = {
-      Enabled = true,
-      FolderName = "SatouHubConfig",
-      FileName = "Configuration"
-   },
-   KeySystem = false
+-- สร้างหน้าต่างหลัก Satou Hub
+local Window = Fluent:CreateWindow({
+    Title = "Satou Hub",
+    SubTitle = "by Satou",
+    TabWidth = 160,
+    Size = UDim2.fromOffset(580, 340),
+    Acrylic = true,
+    Theme = "Darker",
+    MinimizeKey = Enum.KeyCode.RightControl
 })
 
 ---------------------------------------------------------
--- 🔴 ระบบบังคับแปลงปุ่ม Show Rayfield เป็น Satou Hub (ทำงานวนลูปดักจับ)
+-- 🔴 สร้างปุ่มลอยตัว S (เปิด/ปิด GUI ได้ 100% บนมือถือ)
 ---------------------------------------------------------
-task.spawn(function()
-    local coreGui = game:GetService("CoreGui")
-    
-    -- ทำการตรวจสอบและเปลี่ยนรูปทรงปุ่มอยู่เรื่อยๆ เพื่อป้องกัน Rayfield รีเซ็ตกลับ
-    while task.wait(0.5) do
-        for _, gui in pairs(coreGui:GetChildren()) do
-            -- ค้นหา ScreenGui ของ Rayfield
-            if gui:IsA("ScreenGui") and (gui.Name:find("Rayfield") or gui.Name:find("Sirius")) then
-                for _, obj in pairs(gui:GetDescendants()) do
-                    -- ค้นหา TextButton หรือ TextLabel ที่มีคำว่า Rayfield หรือ Show
-                    if (obj:IsA("TextButton") or obj:IsA("TextLabel")) then
-                        if obj.Text:find("Rayfield") or obj.Text:find("Show") or obj.Text:find("Hide") then
-                            -- ถ้าเจอ TextLabel ให้เปลี่ยนข้อความ
-                            obj.Text = "S"
-                            obj.TextColor3 = Color3.fromRGB(255, 255, 255)
-                            
-                            -- ถ้าเจอตัว Button หลัก ให้ปรับขนาดและสี
-                            local btn = obj:IsA("TextButton") and obj or obj:FindFirstAncestorOfClass("TextButton")
-                            if btn then
-                                btn.Text = "S"
-                                btn.Font = Enum.Font.SourceSansBold
-                                btn.TextSize = 26
-                                btn.BackgroundColor3 = Color3.fromRGB(180, 0, 0) -- สีแดง Satou
-                                btn.Size = UDim2.new(0, 45, 0, 45) -- ปรับเป็นขนาดจัตุรัส/วงกลม
-                                
-                                -- ทำเป็นทรงกลม
-                                local corner = btn:FindFirstChildOfClass("UICorner") or Instance.new("UICorner", btn)
-                                corner.CornerRadius = UDim.new(1, 0)
-                                
-                                -- ใส่ขอบเรืองแสง
-                                local stroke = btn:FindFirstChildOfClass("UIStroke") or Instance.new("UIStroke", btn)
-                                stroke.Color = Color3.fromRGB(255, 50, 50)
-                                stroke.Thickness = 2
-                            end
+local ScreenGui = Instance.new("ScreenGui")
+local ToggleButton = Instance.new("TextButton")
+local UICorner = Instance.new("UICorner")
+local UIStroke = Instance.new("UIStroke")
+
+ScreenGui.Parent = game.CoreGui or game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.Name = "SatouHubFloatingButton"
+
+ToggleButton.Parent = ScreenGui
+ToggleButton.BackgroundColor3 = Color3.fromRGB(180, 0, 0)
+ToggleButton.Position = UDim2.new(0, 15, 0.3, 0)
+ToggleButton.Size = UDim2.new(0, 50, 0, 50)
+ToggleButton.Font = Enum.Font.SourceSansBold
+ToggleButton.Text = "S"
+ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleButton.TextSize = 30.000
+ToggleButton.Active = true
+ToggleButton.Draggable = true
+
+UICorner.CornerRadius = UDim.new(1, 0)
+UICorner.Parent = ToggleButton
+
+UIStroke.Parent = ToggleButton
+UIStroke.Color = Color3.fromRGB(255, 50, 50)
+UIStroke.Thickness = 2.5
+
+-- คำสั่งสั่งซ่อน/แสดงเมนู Fluent เมื่อแตะปุ่ม S
+ToggleButton.MouseButton1Click:Connect(function()
+    Window:Minimize()
+end)
+
+---------------------------------------------------------
+-- TAB ต่างๆ ของ Satou Hub
+---------------------------------------------------------
+local Tabs = {
+    Home = Window:AddTab({ Title = "🏠 หน้าหลัก", Icon = "home" }),
+    Main = Window:AddTab({ Title = "🥚 Steal an Egg", Icon = "egg" }),
+    Player = Window:AddTab({ Title = "⚙️ ตั้งค่าตัวละคร", Icon = "user" })
+}
+
+-- TAB: หน้าหลัก
+Tabs.Home:AddParagraph({
+    Title = "🔴 ยินดีต้อนรับสู่ Satou Hub",
+    Content = "สคริปต์อย่างเป็นทางการของค่าย Satou Hub\nสามารถลากปุ่มตัว 'S' สีแดงไปวางตำแหน่งไหนก็ได้บนหน้าจอ และกดเพื่อ ย่อ/ขยาย หน้าต่างสคริปต์"
+})
+
+-- TAB: Steal an Egg
+_G.AutoTpSteal = false
+
+Tabs.Main:AddSection("ระบบฟาร์มไข่อัตโนมัติ")
+
+local AutoStealToggle = Tabs.Main:AddToggle("AutoSteal", {Title = "Auto TP & Steal Eggs (วาร์ปขโมยไข่)", Default = false })
+
+AutoStealToggle:OnChanged(function(Value)
+    _G.AutoTpSteal = Value
+    if Value then
+        task.spawn(function()
+            while _G.AutoTpSteal do
+                local player = game.Players.LocalPlayer
+                for _, v in pairs(workspace:GetDescendants()) do
+                    if not _G.AutoTpSteal then break end
+                    if v:IsA("ProximityPrompt") then
+                        local eggPart = v.Parent
+                        if eggPart and eggPart:IsA("BasePart") and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                            local hrp = player.Character.HumanoidRootPart
+                            hrp.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+                            hrp.CFrame = eggPart.CFrame * CFrame.new(0, 2, 0)
+                            hrp.Anchored = true
+                            task.wait(0.15)
+                            fireproximityprompt(v)
+                            task.wait(0.35)
+                            hrp.Anchored = false
                         end
                     end
                 end
+                task.wait(0.5)
             end
+            if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
+            end
+        end)
+    else
+        if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
         end
     end
 end)
 
----------------------------------------------------------
--- TAB 1: หน้าหลัก (Home)
----------------------------------------------------------
-local HomeTab = Window:CreateTab("🏠 หน้าหลัก", 4483345998)
+Tabs.Main:AddSection("ระบบวาร์ป")
 
-HomeTab:CreateSection("ยินดีต้อนรับสู่ Satou Hub")
-HomeTab:CreateLabel("สคริปต์อย่างเป็นทางการของค่าย Satou Hub")
-HomeTab:CreateLabel("กดปุ่ม 'S' สีแดงด้านบนเพื่อ เปิด/ปิด เมนูได้ทันที")
-
----------------------------------------------------------
--- TAB 2: ฟังก์ชันขโมยไข่ (Steal an Egg)
----------------------------------------------------------
-local EggTab = Window:CreateTab("🥚 Steal an Egg", 4483345998)
-
-_G.AutoTpSteal = false
-
-EggTab:CreateSection("ระบบฟาร์มไข่อัตโนมัติ")
-
-EggTab:CreateToggle({
-   Name = "Auto TP & Steal Eggs (วาร์ปขโมยไข่)",
-   CurrentValue = false,
-   Flag = "AutoStealToggle",
-   Callback = function(Value)
-      _G.AutoTpSteal = Value
-      if Value then
-         task.spawn(function()
-            while _G.AutoTpSteal do
-               local player = game.Players.LocalPlayer
-               for _, v in pairs(workspace:GetDescendants()) do
-                  if not _G.AutoTpSteal then break end
-                  if v:IsA("ProximityPrompt") then
-                     local eggPart = v.Parent
-                     if eggPart and eggPart:IsA("BasePart") and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                        local hrp = player.Character.HumanoidRootPart
-                        hrp.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
-                        hrp.CFrame = eggPart.CFrame * CFrame.new(0, 2, 0)
-                        hrp.Anchored = true
-                        task.wait(0.15)
-                        fireproximityprompt(v)
-                        task.wait(0.35)
-                        hrp.Anchored = false
-                     end
-                  end
-               end
-               task.wait(0.5)
-            end
-            if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-               game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
-            end
-         end)
-      else
-         if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-            game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
-         end
-      end
-   end,
+Tabs.Main:AddButton({
+    Title = "Teleport to Spawn (วาร์ปกลับจุดเกิด)",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            player.Character.HumanoidRootPart.Anchored = false
+            player.Character.HumanoidRootPart.CFrame = workspace.SpawnLocation.CFrame + Vector3.new(0, 3, 0)
+        end
+    end
 })
 
-EggTab:CreateSection("ระบบวาร์ป")
-
-EggTab:CreateButton({
-   Name = "Teleport to Spawn (วาร์ปกลับจุดเกิด)",
-   Callback = function()
-      local player = game.Players.LocalPlayer
-      if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-         player.Character.HumanoidRootPart.Anchored = false
-         player.Character.HumanoidRootPart.CFrame = workspace.SpawnLocation.CFrame + Vector3.new(0, 3, 0)
-      end
-   end,
+-- TAB: ตั้งค่าตัวละคร
+Tabs.Player:AddSlider("WalkSpeedSlider", {
+    Title = "WalkSpeed (ความเร็วเดิน)",
+    Min = 16,
+    Max = 200,
+    Default = 16,
+    Rounding = 0,
+    Callback = function(Value)
+        if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
+            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
+        end
+    end
 })
 
----------------------------------------------------------
--- TAB 3: ตั้งค่าตัวละคร (Player Settings)
----------------------------------------------------------
-local MiscTab = Window:CreateTab("⚙️ ตั้งค่าตัวละคร", 4483345998)
-
-MiscTab:CreateSlider({
-   Name = "WalkSpeed (ความเร็วเดิน)",
-   Range = {16, 200},
-   Increment = 1,
-   Suffix = "Speed",
-   CurrentValue = 16,
-   Flag = "SpeedSlider",
-   Callback = function(Value)
-      if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
-         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Value
-      end
-   end,
-})
+Window:SelectTab(1)
