@@ -15,7 +15,7 @@ SatouGui.ResetOnSpawn = false
 SatouGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
 ---------------------------------------------------------
--- ⏳ 1. Loading Screen แบบใหม่ (Animated Ring & Neon Bar)
+-- ⏳ 1. Loading Screen
 ---------------------------------------------------------
 local LoadingFrame = Instance.new("Frame")
 LoadingFrame.Name = "LoadingFrame"
@@ -31,7 +31,6 @@ LoadingStroke.Color = Color3.fromRGB(235, 35, 60)
 LoadingStroke.Thickness = 1.8
 LoadingStroke.Transparency = 0.2
 
--- รูปโลโก้
 local LogoImage = Instance.new("ImageLabel")
 LogoImage.Parent = LoadingFrame
 LogoImage.Size = UDim2.new(0, 85, 0, 85)
@@ -39,7 +38,6 @@ LogoImage.Position = UDim2.new(0.5, -42, 0.12, 0)
 LogoImage.BackgroundTransparency = 1
 LogoImage.Image = LOGO_ID
 
--- ข้อความ Status
 local StatusText = Instance.new("TextLabel")
 StatusText.Parent = LoadingFrame
 StatusText.Position = UDim2.new(0, 0, 0.58, 0)
@@ -50,7 +48,6 @@ StatusText.Text = "INITIALIZING SATOU HUB..."
 StatusText.TextColor3 = Color3.fromRGB(200, 200, 210)
 StatusText.TextSize = 12
 
--- หลอดโหลดแบบนีออน
 local BarBackground = Instance.new("Frame")
 BarBackground.Parent = LoadingFrame
 BarBackground.Position = UDim2.new(0.1, 0, 0.78, 0)
@@ -124,15 +121,47 @@ HeaderIcon.Image = LOGO_ID
 local HeaderTitle = Instance.new("TextLabel")
 HeaderTitle.Parent = Header
 HeaderTitle.Position = UDim2.new(0, 48, 0, 0)
-HeaderTitle.Size = UDim2.new(1, -50, 1, 0)
+HeaderTitle.Size = UDim2.new(1, -90, 1, 0)
 HeaderTitle.BackgroundTransparency = 1
 HeaderTitle.Font = Enum.Font.GothamBold
 HeaderTitle.Text = "SATOU HUB  •  Steal an Egg"
 HeaderTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
-HeaderTitle.TextSize = 14
+HeaderTitle.TextSize = 13
 HeaderTitle.TextXAlignment = Enum.TextXAlignment.Left
 
--- คอนเทนเนอร์ใส่ปุ่มกด
+---------------------------------------------------------
+-- ❌ เพิ่มปุ่มปิดหน้าต่าง (Close Button)
+---------------------------------------------------------
+local CloseBtn = Instance.new("TextButton")
+CloseBtn.Name = "CloseButton"
+CloseBtn.Parent = Header
+CloseBtn.Position = UDim2.new(1, -35, 0.5, -12)
+CloseBtn.Size = UDim2.new(0, 25, 0, 25)
+CloseBtn.BackgroundColor3 = Color3.fromRGB(255, 45, 70)
+CloseBtn.BackgroundTransparency = 0.8
+CloseBtn.Font = Enum.Font.GothamBold
+CloseBtn.Text = "✕"
+CloseBtn.TextColor3 = Color3.fromRGB(255, 100, 100)
+CloseBtn.TextSize = 14
+
+Instance.new("UICorner", CloseBtn).CornerRadius = UDim.new(0, 6)
+
+-- เอฟเฟกต์ชี้/กด และฟังชันสั่งปิดหน้าต่าง
+CloseBtn.MouseEnter:Connect(function()
+    TweenService:Create(CloseBtn, TweenInfo.new(0.2), {BackgroundTransparency = 0.2, TextColor3 = Color3.fromRGB(255, 255, 255)}):Play()
+end)
+
+CloseBtn.MouseLeave:Connect(function()
+    TweenService:Create(CloseBtn, TweenInfo.new(0.2), {BackgroundTransparency = 0.8, TextColor3 = Color3.fromRGB(255, 100, 100)}):Play()
+end)
+
+CloseBtn.MouseButton1Click:Connect(function()
+    MainFrame.Visible = false
+end)
+
+---------------------------------------------------------
+-- ⚙️ คอนเทนเนอร์รายการปุ่ม
+---------------------------------------------------------
 local Container = Instance.new("Frame")
 Container.Parent = MainFrame
 Container.Position = UDim2.new(0, 10, 0, 50)
@@ -143,9 +172,7 @@ local UIList = Instance.new("UIListLayout", Container)
 UIList.SortOrder = Enum.SortOrder.LayoutOrder
 UIList.Padding = UDim.new(0, 8)
 
----------------------------------------------------------
--- 🛠️ ฟังก์ชันสร้างปุ่ม Toggle สวยๆ
----------------------------------------------------------
+-- ฟังก์ชันสร้างปุ่ม Toggle
 local function CreateToggle(name, default, callback)
     local Frame = Instance.new("Frame")
     Frame.Parent = Container
@@ -246,10 +273,9 @@ CreateToggle("Teleport Safe Zone", false, function(state)
 end)
 
 ---------------------------------------------------------
--- ⚙️ 4. สั่งงานระบบ Animation
+-- ⚙️ Animation ระบบสลับการแสดงผล
 ---------------------------------------------------------
 ToggleBtn.MouseButton1Click:Connect(function()
-    -- Click Animation เล็กๆ บนปุ่มลอย
     TweenService:Create(ToggleBtn, TweenInfo.new(0.1), {Size = UDim2.new(0, 46, 0, 46)}):Play()
     task.wait(0.1)
     TweenService:Create(ToggleBtn, TweenInfo.new(0.1), {Size = UDim2.new(0, 52, 0, 52)}):Play()
