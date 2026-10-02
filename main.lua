@@ -16,40 +16,36 @@ local Window = Rayfield:CreateWindow({
 })
 
 ---------------------------------------------------------
--- 🔴 ระบบปุ่มลอย Satou Hub (แก้ไขระบบสั่งเปิด/ปิดให้ทำงานได้จริง)
+-- 🔴 ดัดแปลงปุ่ม Show Rayfield ให้เป็นปุ่ม S ของ Satou Hub
 ---------------------------------------------------------
-local VirtualInputManager = game:GetService("VirtualInputManager")
-local ScreenGui = Instance.new("ScreenGui")
-local ToggleButton = Instance.new("TextButton")
-local UICorner = Instance.new("UICorner")
-local UIStroke = Instance.new("UIStroke")
-
-ScreenGui.Parent = game.CoreGui or game.Players.LocalPlayer:WaitForChild("PlayerGui")
-ScreenGui.Name = "SatouHubToggleButton"
-
-ToggleButton.Parent = ScreenGui
-ToggleButton.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
-ToggleButton.Position = UDim2.new(0, 10, 0.4, 0)
-ToggleButton.Size = UDim2.new(0, 55, 0, 55)
-ToggleButton.Font = Enum.Font.SourceSansBold
-ToggleButton.Text = "S"
-ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleButton.TextSize = 32.000
-ToggleButton.Active = true
-ToggleButton.Draggable = true
-
-UICorner.CornerRadius = UDim.new(1, 0)
-UICorner.Parent = ToggleButton
-
-UIStroke.Parent = ToggleButton
-UIStroke.Color = Color3.fromRGB(255, 50, 50)
-UIStroke.Thickness = 2
-
--- แก้ไขจุดนี้: สั่งให้กดปุ่มจำลองเมื่อแตะปุ่ม S
-ToggleButton.MouseButton1Click:Connect(function()
-    VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.K, false, game)
-    task.wait(0.05)
-    VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.K, false, game)
+task.spawn(function()
+   task.wait(1)
+   local coreGui = game:GetService("CoreGui")
+   -- ค้นหาปุ่ม Rayfield เดิมบนหน้าจอแล้วเปลี่ยนรูปแบบ
+   for _, gui in pairs(coreGui:GetChildren()) do
+      if gui:IsA("ScreenGui") and (gui.Name:find("Rayfield") or gui:FindFirstChild("TextButton", true)) then
+         for _, btn in pairs(gui:GetDescendants()) do
+            if btn:IsA("TextButton") and (btn.Text:find("Rayfield") or btn.Text:find("Show") or btn.Text:find("Hide")) then
+               -- เปลี่ยนเป็นสีและดีไซน์ Satou Hub
+               btn.Text = "S"
+               btn.Font = Enum.Font.SourceSansBold
+               btn.TextSize = 28
+               btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+               btn.BackgroundColor3 = Color3.fromRGB(180, 0, 0)
+               btn.Size = UDim2.new(0, 50, 0, 50)
+               
+               -- ปรับให้เป็นทรงกลม
+               local corner = btn:FindFirstChildOfClass("UICorner") or Instance.new("UICorner", btn)
+               corner.CornerRadius = UDim.new(1, 0)
+               
+               -- เพิ่มเส้นขอบสีแดงเรืองแสง
+               local stroke = btn:FindFirstChildOfClass("UIStroke") or Instance.new("UIStroke", btn)
+               stroke.Color = Color3.fromRGB(255, 60, 60)
+               stroke.Thickness = 2
+            end
+         end
+      end
+   end
 end)
 
 ---------------------------------------------------------
@@ -59,7 +55,7 @@ local HomeTab = Window:CreateTab("🏠 หน้าหลัก", 4483345998)
 
 HomeTab:CreateSection("ยินดีต้อนรับสู่ Satou Hub")
 HomeTab:CreateLabel("สคริปต์อย่างเป็นทางการของค่าย Satou Hub")
-HomeTab:CreateLabel("กดที่ปุ่ม 'S' เพื่อ ซ่อน/เปิด เมนูได้เลย")
+HomeTab:CreateLabel("กดปุ่ม 'S' สีแดงด้านบนเพื่อ เปิด/ปิด เมนูได้ทันที")
 
 ---------------------------------------------------------
 -- TAB 2: ฟังก์ชันขโมยไข่ (Steal an Egg)
