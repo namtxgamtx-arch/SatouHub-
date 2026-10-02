@@ -16,36 +16,48 @@ local Window = Rayfield:CreateWindow({
 })
 
 ---------------------------------------------------------
--- 🔴 ดัดแปลงปุ่ม Show Rayfield ให้เป็นปุ่ม S ของ Satou Hub
+-- 🔴 ระบบบังคับแปลงปุ่ม Show Rayfield เป็น Satou Hub (ทำงานวนลูปดักจับ)
 ---------------------------------------------------------
 task.spawn(function()
-   task.wait(1)
-   local coreGui = game:GetService("CoreGui")
-   -- ค้นหาปุ่ม Rayfield เดิมบนหน้าจอแล้วเปลี่ยนรูปแบบ
-   for _, gui in pairs(coreGui:GetChildren()) do
-      if gui:IsA("ScreenGui") and (gui.Name:find("Rayfield") or gui:FindFirstChild("TextButton", true)) then
-         for _, btn in pairs(gui:GetDescendants()) do
-            if btn:IsA("TextButton") and (btn.Text:find("Rayfield") or btn.Text:find("Show") or btn.Text:find("Hide")) then
-               -- เปลี่ยนเป็นสีและดีไซน์ Satou Hub
-               btn.Text = "S"
-               btn.Font = Enum.Font.SourceSansBold
-               btn.TextSize = 28
-               btn.TextColor3 = Color3.fromRGB(255, 255, 255)
-               btn.BackgroundColor3 = Color3.fromRGB(180, 0, 0)
-               btn.Size = UDim2.new(0, 50, 0, 50)
-               
-               -- ปรับให้เป็นทรงกลม
-               local corner = btn:FindFirstChildOfClass("UICorner") or Instance.new("UICorner", btn)
-               corner.CornerRadius = UDim.new(1, 0)
-               
-               -- เพิ่มเส้นขอบสีแดงเรืองแสง
-               local stroke = btn:FindFirstChildOfClass("UIStroke") or Instance.new("UIStroke", btn)
-               stroke.Color = Color3.fromRGB(255, 60, 60)
-               stroke.Thickness = 2
+    local coreGui = game:GetService("CoreGui")
+    
+    -- ทำการตรวจสอบและเปลี่ยนรูปทรงปุ่มอยู่เรื่อยๆ เพื่อป้องกัน Rayfield รีเซ็ตกลับ
+    while task.wait(0.5) do
+        for _, gui in pairs(coreGui:GetChildren()) do
+            -- ค้นหา ScreenGui ของ Rayfield
+            if gui:IsA("ScreenGui") and (gui.Name:find("Rayfield") or gui.Name:find("Sirius")) then
+                for _, obj in pairs(gui:GetDescendants()) do
+                    -- ค้นหา TextButton หรือ TextLabel ที่มีคำว่า Rayfield หรือ Show
+                    if (obj:IsA("TextButton") or obj:IsA("TextLabel")) then
+                        if obj.Text:find("Rayfield") or obj.Text:find("Show") or obj.Text:find("Hide") then
+                            -- ถ้าเจอ TextLabel ให้เปลี่ยนข้อความ
+                            obj.Text = "S"
+                            obj.TextColor3 = Color3.fromRGB(255, 255, 255)
+                            
+                            -- ถ้าเจอตัว Button หลัก ให้ปรับขนาดและสี
+                            local btn = obj:IsA("TextButton") and obj or obj:FindFirstAncestorOfClass("TextButton")
+                            if btn then
+                                btn.Text = "S"
+                                btn.Font = Enum.Font.SourceSansBold
+                                btn.TextSize = 26
+                                btn.BackgroundColor3 = Color3.fromRGB(180, 0, 0) -- สีแดง Satou
+                                btn.Size = UDim2.new(0, 45, 0, 45) -- ปรับเป็นขนาดจัตุรัส/วงกลม
+                                
+                                -- ทำเป็นทรงกลม
+                                local corner = btn:FindFirstChildOfClass("UICorner") or Instance.new("UICorner", btn)
+                                corner.CornerRadius = UDim.new(1, 0)
+                                
+                                -- ใส่ขอบเรืองแสง
+                                local stroke = btn:FindFirstChildOfClass("UIStroke") or Instance.new("UIStroke", btn)
+                                stroke.Color = Color3.fromRGB(255, 50, 50)
+                                stroke.Thickness = 2
+                            end
+                        end
+                    end
+                end
             end
-         end
-      end
-   end
+        end
+    end
 end)
 
 ---------------------------------------------------------
